@@ -16,6 +16,10 @@ public class ChatRequest {
         return personality;
     }
 
+    public void setPersonality(String personality) {
+        this.personality = personality;
+    }
+
     public String getMessage() {
         return message;
     }
