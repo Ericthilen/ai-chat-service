@@ -18,8 +18,10 @@ public class ChatController {
 
     @PostMapping
     public ChatResponse chat(@Valid @RequestBody ChatRequest request) {
-        String reply = chatService.createReply(request);
         String sessionId = chatService.getSessionId(request);
+        request.setSessionId(sessionId);
+
+        String reply = chatService.createReply(request);
 
         return new ChatResponse(reply, sessionId);
     }
