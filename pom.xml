@@ -59,6 +59,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- WireMock för att mocka OpenRouter i tester -->
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>3.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
