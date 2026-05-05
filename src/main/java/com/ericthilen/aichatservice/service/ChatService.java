@@ -22,13 +22,13 @@ public class ChatService {
     private final Map<String, List<ChatMessage>> memory = new HashMap<>();
 
     @Value("${openrouter.api.key}")
-    private String apiKey;
+    String apiKey;
 
     @Value("${openrouter.api.url}")
-    private String apiUrl;
+    String apiUrl;
 
     @Value("${openrouter.model}")
-    private String model;
+    String model;
 
     public ChatService(RestClient restClient) {
         this.restClient = restClient;
