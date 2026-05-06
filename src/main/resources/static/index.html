@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Eric</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <div class="sidebar">
+
+        <div class="logo-section">
+            <img src="profile.jpg" alt="Eric" class="profile-image">
+
+            <div>
+                <h1>Chat with Eric</h1>
+                <p>Din AI-assistent 👋</p>
+            </div>
+        </div>
+
+        <div class="personality-section">
+            <h3>VÄLJ PERSONLIGHET</h3>
+
+            <button class="personality-btn active" onclick="setPersonality('helper', this)">
+                Eric Helper
+            </button>
+
+            <button class="personality-btn" onclick="setPersonality('coder', this)">
+                Eric Coder
+            </button>
+
+            <button class="personality-btn" onclick="setPersonality('pirate', this)">
+                Eric Pirate
+            </button>
+        </div>
+
+        <div class="chat-history">
+            <div class="history-header">
+                <h3>TIDIGARE CHATTER</h3>
+
+                <div class="history-actions">
+                    <button class="delete-all-btn" onclick="deleteAllChats()">
+                        Radera alla
+                    </button>
+
+                    <button class="new-chat-btn" onclick="newChat()">
+                        Ny chatt
+                    </button>
+                </div>
+            </div>
+
+            <div id="history-list"></div>
+        </div>
+
+    </div>
+
+    <div class="chat-container">
+
+        <div class="chat-header">
+            <h2 id="chat-title">Chatta med Eric Helper</h2>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="input-section">
+
+            <input
+                    type="text"
+                    id="message-input"
+                    placeholder="Skriv din fråga här..."
+            >
+
+            <button onclick="sendMessage()">
+                Skicka
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
