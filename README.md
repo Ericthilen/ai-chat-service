@@ -1,6 +1,6 @@
 # AI Chat Service
 
-![AI Chat Project](aichatproject.png)
+![AI Chat Project](static/aichatproject.png)
 
 En Spring Boot-baserad chatttjänst som integrerar med OpenRouter API för att erbjuda en interaktiv chattupplevelse med olika personligheter.
 
