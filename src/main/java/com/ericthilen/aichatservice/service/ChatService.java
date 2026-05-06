@@ -1,41 +1,24 @@
 package com.ericthilen.aichatservice.service;
 
-import com.ericthilen.aichatservice.exception.AiServiceException;
 import com.ericthilen.aichatservice.model.ChatMessage;
 import com.ericthilen.aichatservice.model.ChatRequest;
-import com.ericthilen.aichatservice.model.OpenRouterRequest;
-import com.ericthilen.aichatservice.model.OpenRouterResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 import java.util.*;
 
 @Service
 public class ChatService {
 
-    private final RestClient restClient;
+    private final OpenRouterClient openRouterClient;
 
     private final Map<String, List<ChatMessage>> memory = new HashMap<>();
 
-    @Value("${openrouter.api.key}")
-    String apiKey;
-
-    @Value("${openrouter.api.url}")
-    String apiUrl;
-
-    @Value("${openrouter.model}")
-    String model;
-
-    public ChatService(RestClient restClient) {
-        this.restClient = restClient;
+    public ChatService(OpenRouterClient openRouterClient) {
+        this.openRouterClient = openRouterClient;
     }
 
     public String createReply(ChatRequest request) {
-        String sessionId = getSessionId(request);
+        String sessionId = request.getSessionId();
 
         List<ChatMessage> history = memory.getOrDefault(sessionId, new ArrayList<>());
 
@@ -44,47 +27,13 @@ public class ChatService {
         messagesToAi.addAll(history);
         messagesToAi.add(new ChatMessage("user", request.getMessage()));
 
-        String reply = askAi(messagesToAi);
+        String reply = openRouterClient.askAi(messagesToAi);
 
         history.add(new ChatMessage("user", request.getMessage()));
         history.add(new ChatMessage("assistant", reply));
         memory.put(sessionId, history);
 
         return reply;
-    }
-
-    @Retryable(
-            retryFor = RestClientException.class,
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 1000, multiplier = 2)
-    )
-    public String askAi(List<ChatMessage> messagesToAi) {
-        try {
-            OpenRouterRequest aiRequest = new OpenRouterRequest(model, messagesToAi);
-
-            OpenRouterResponse aiResponse = restClient.post()
-                    .uri(apiUrl)
-                    .header("Authorization", "Bearer " + apiKey)
-                    .header("Content-Type", "application/json")
-                    .body(aiRequest)
-                    .retrieve()
-                    .body(OpenRouterResponse.class);
-
-            if (aiResponse == null || aiResponse.getChoices() == null || aiResponse.getChoices().isEmpty()) {
-                throw new AiServiceException("AI-tjänsten svarade inte korrekt.");
-            }
-
-            return aiResponse
-                    .getChoices()
-                    .get(0)
-                    .getMessage()
-                    .getContent();
-
-        } catch (RestClientException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new AiServiceException("AI-tjänsten kunde inte hantera svaret.");
-        }
     }
 
     public String getSessionId(ChatRequest request) {
@@ -96,6 +45,14 @@ public class ChatService {
     }
 
     private String getSystemPrompt(String personality) {
+        if (personality.equalsIgnoreCase("coder")) {
+            return "Du är en programmeringshjälpare. Svara tydligt, enkelt och visa kodexempel när det passar.";
+        }
+
+        if (personality.equalsIgnoreCase("pirate")) {
+            return "Du är en hjälpsam assistent som svarar med lite piratstil. Svara fortfarande tydligt och på svenska.";
+        }
+
         return "Du är en hjälpsam assistent. Svara tydligt, enkelt och på svenska.";
     }
 }
