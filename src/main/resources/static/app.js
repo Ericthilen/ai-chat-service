@@ -5,11 +5,12 @@ const el = id => document.getElementById(id);
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 function setPersonality(type, button) {
+    if (personality === type) return;
     personality = type;
     document.querySelectorAll(".personality-btn").forEach(btn => btn.classList.toggle("active", btn === button));
     el("chat-title").innerText = `Chatta med Eric ${capitalize(type)}`;
     addSystemMessage(`Personlighet ändrad till Eric ${capitalize(type)}`);
-    saveChat();
+    // Vi sparar inte här, vi låter nästa meddelande bära med sig den nya personligheten
 }
 
 function newChat() {
@@ -169,8 +170,10 @@ function openChat(id) {
     if (chat.personality) {
         personality = chat.personality;
         el("chat-title").innerText = `Chatta med Eric ${capitalize(personality)}`;
-        document.querySelectorAll(".personality-btn").forEach(btn => 
-            btn.classList.toggle("active", btn.innerText.toLowerCase().includes(personality)));
+        document.querySelectorAll(".personality-btn").forEach(btn => {
+            const btnType = btn.getAttribute("onclick").match(/'([^']+)'/)[1];
+            btn.classList.toggle("active", btnType === personality);
+        });
     }
 }
 
